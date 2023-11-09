@@ -8,6 +8,7 @@ four_k = ["3840", "4K"]
 
 very_sharp = "unsharp=7:7:2.0:5:5:1.0"
 sharp = "unsharp=5:5:0.8:3:3:0.4"
+smooth = "unsharp=7:7:-2.0"
 
 
 def upscale_video_to_4k(input_path, output_path):
@@ -24,19 +25,19 @@ def upscale_video_to_4k(input_path, output_path):
         'ffmpeg',
         # '-hwaccel', 'cuda',                # Enable CUDA hardware acceleration
         '-i', input_path,  # Input file path
-        '-vf', f'scale={one_k[0]}:-2:flags=lanczos,'  # Use NPP scaling with Lanczos.
-               f'gblur=sigma=1.0',  # increase blur effect
-        # f'{very_sharp}',  # -2 maintains aspect ratio
+        '-vf', f'deblock=1,scale={one_k[0]}:-2:flags=lanczos',  # Use NPP scaling with Lanczos.
+               # f'gblur=sigma=2.0',  # increase blur effect
+        # f'{smooth}',  # -2 maintains aspect ratio
         '-c:v', 'h264_nvenc',  # Specify Nvidia's hardware-accelerated H.264 video codec
         '-preset', 'slow',  # Preset for the encoder speed/quality tradeoff
         '-profile:v', 'high',  # Specify H.264 profile level
         '-pix_fmt', 'yuv420p',  # Pixel format for compatibility
-        '-rc', 'vbr',  # Rate control method: Variable Bit Rate
-        '-cq', '19',  # Constant Quality for VBR mode
-        '-qmin', '18',  # Minimum quantizer scale
-        '-qmax', '23',  # Maximum quantizer scale
-        '-maxrate', '50M',  # Maximum bitrate
-        '-bufsize', '100M',  # Buffer size
+        # '-rc', 'vbr',  # Rate control method: Variable Bit Rate
+        # '-cq', '19',  # Constant Quality for VBR mode
+        # '-qmin', '18',  # Minimum quantizer scale
+        # '-qmax', '23',  # Maximum quantizer scale
+        # '-maxrate', '50M',  # Maximum bitrate
+        # '-bufsize', '100M',  # Buffer size
         '-acodec', 'copy',  # Copy audio stream without re-encoding
         output_path,  # Output file path
         '-y',  # Overwrite output file without asking
